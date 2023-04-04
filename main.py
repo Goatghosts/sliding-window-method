@@ -92,7 +92,7 @@ def double_point(x, y, z, a, b, p):
     return x3, y3, z3
 
 
-def multiply_points(x1, y1, z1, k, a, b, p):
+def simple_multiply_points_method(x1, y1, z1, k, a, b, p):
     """
     Multiply a point on an elliptic curve in homogeneous projective coordinates.
     """
@@ -141,7 +141,7 @@ def sliding_window_method(x1, y1, z1, k, a, b, p):
 
     tP = []
     for i in range(2**w):
-        tP.append(multiply_points(x1, y1, z1, i, a, b, p))
+        tP.append(simple_multiply_points_method(x1, y1, z1, i, a, b, p))
 
     i = m
 
