@@ -1,13 +1,9 @@
-# Hardware Accelerator for zk-SNARKs
+# Sliding Window Method
 
-## References
+Thanks to [stephancill](https://github.com/stephancill), I finally found a decent implementation of the sliding window method as described on the [Wikipedia page](https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Sliding-window_method).
 
-Elliptic curve boilerplate - https://github.com/ljhsiun2/EllipticCurves_SystemVerilog
-Karatsuba - https://github.com/JC-S/Karatsuba_multiplier_HDL/
-Booth - https://github.com/MorrisMA/Booth_Multipliers
+This code demonstrates the process of multiplying the base point of the secp256k1 curve by a scalar (private key) and converts the resulting point into the public key format.
 
-## Development
+However, this code can be optimized since there is no need to calculate the table for a given window size each time. It is enough to store it in the device's memory for subsequent use during multiplication.
 
-1. Create a new Vivado project
-2. Add all the sources from the `src` directory
-3. Create a simulation set for each testbench in the `tb` directory
+At present, this code only compares the results of multiplying the same scalar using the double and add method and the sliding window method.
