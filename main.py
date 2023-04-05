@@ -1,4 +1,6 @@
-import libnum
+import random
+
+from utils import int_to_hex, get_uncompressed_public_key, homogeneous_to_affine
 
 
 def add_points(x1, y1, z1, x2, y2, z2, a, b, p):
@@ -92,20 +94,6 @@ def double_point(x, y, z, a, b, p):
     return x3, y3, z3
 
 
-def simple_multiply_points_method(x1, y1, z1, k, a, b, p):
-    """
-    Multiply a point on an elliptic curve in homogeneous projective coordinates.
-    """
-
-    x = x1
-    y = y1
-    z = z1
-    for _ in range(k - 1):
-        x, y, z = add_points(x, y, z, x1, y1, z1, a, b, p)
-
-    return x, y, z
-
-
 def double_and_add_method(x1, y1, z1, k, a, b, p):
     """
     Multiply a point on an elliptic curve in homogeneous projective coordinates using double-and-add method.
@@ -124,7 +112,7 @@ def double_and_add_method(x1, y1, z1, k, a, b, p):
             x, y, z = add_points(x, y, z, xt, yt, zt, a, b, p)
         xt, yt, zt = double_point(xt, yt, zt, a, b, p)
 
-    return homogeneous_to_affine(x, y, z, p)
+    return x, y, z
 
 
 def sliding_window_method(x1, y1, z1, k, a, b, p):
@@ -141,7 +129,7 @@ def sliding_window_method(x1, y1, z1, k, a, b, p):
 
     tP = []
     for i in range(2**w):
-        tP.append(simple_multiply_points_method(x1, y1, z1, i, a, b, p))
+        tP.append(double_and_add_method(x1, y1, z1, i, a, b, p))
 
     i = m
 
@@ -160,30 +148,7 @@ def sliding_window_method(x1, y1, z1, k, a, b, p):
             tPx, tPy, tPz = tP[t]
             x, y, z = add_points(x, y, z, tPx, tPy, tPz, a, b, p)
 
-    return homogeneous_to_affine(x, y, z, p)
-
-
-def homogeneous_to_affine(x, y, z, p):
-    """
-    Convert a point on an elliptic curve in homogeneous coordinates to affine coordinates.
-    """
-
-    try:
-        z_inv = libnum.invmod(z, p)
-        x = (x * z_inv) % p
-        y = (y * z_inv) % p
-    except:
-        return 0, 0
-
-    return x, y
-
-
-def int_to_hex(a: int):
-    return int.to_bytes(a, 32, "big").hex().upper()
-
-
-def get_uncompressed_public_key(x: int, y: int):
-    return (b"\x04" + x.to_bytes(32, "big") + y.to_bytes(32, "big")).hex().upper()
+    return x, y, z
 
 
 if __name__ == "__main__":
@@ -194,11 +159,14 @@ if __name__ == "__main__":
     Gx = int(0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798)
     Gy = int(0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8)
 
-    for private_key in range(1, 100):
-        x1, y1 = double_and_add_method(Gx, Gy, 1, private_key, a, b, p)
-        x2, y2 = sliding_window_method(Gx, Gy, 1, private_key, a, b, p)
-        assert (x1 == x2) and (y1 == y2), "The x and y values obtained using different methods are not equal."
+    for _ in range(100):
+        private_key = random.randrange(1, 2**256)
+        x1, y1, z1 = double_and_add_method(Gx, Gy, 1, private_key, a, b, p)
+        ax1, ay1 = homogeneous_to_affine(x1, y1, z1, p)
+        x2, y2, z2 = sliding_window_method(Gx, Gy, 1, private_key, a, b, p)
+        ax2, ay2 = homogeneous_to_affine(x2, y2, z2, p)
+        assert (ax1 == ax2) and (ay1 == ay2), "The x and y values obtained using different methods are not equal."
         print("Private key (HEX):", int_to_hex(private_key))
-        print("Uncompressed public key (double and add method):", get_uncompressed_public_key(x1, y1))
-        print("Uncompressed public key (sliding window method):", get_uncompressed_public_key(x2, y2))
+        print("Uncompressed public key (double and add method):", get_uncompressed_public_key(ax1, ay1))
+        print("Uncompressed public key (sliding window method):", get_uncompressed_public_key(ax2, ay2))
         print()
