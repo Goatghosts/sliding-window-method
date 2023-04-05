@@ -37,6 +37,6 @@ class SlidingWindow(Secp256k1):
 
         return x, y, z
 
-    def multiplication(self, private_key):
+    def scalar_mult(self, private_key):
         x, y, z = self.sliding_window_method(self.Gx, self.Gy, 1, private_key)
         return self.homogeneous_to_affine(x, y, z)

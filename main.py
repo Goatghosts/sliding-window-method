@@ -11,8 +11,8 @@ if __name__ == "__main__":
 
     for _ in range(100):
         private_key = random.randrange(1, 2**256)
-        x1, y1 = double_and_add.multiplication(private_key)
-        x2, y2 = sliding_window.multiplication(private_key)
+        x1, y1 = double_and_add.scalar_mult(private_key)
+        x2, y2 = sliding_window.scalar_mult(private_key)
         assert (x1 == x2) and (y1 == y2), "The x and y values obtained using different methods are not equal."
         print("Private key (HEX):", int_to_hex(private_key))
         print("Uncompressed public key (double and add method):", get_uncompressed_public_key(x1, y1))

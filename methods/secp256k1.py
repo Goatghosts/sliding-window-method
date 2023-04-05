@@ -18,7 +18,6 @@ class Secp256k1:
         Add two points on an elliptic curve in homogeneous coordinates.
         Source: https://eprint.iacr.org/2015/1060 (alg 1)
         """
-
         b3 = 3 * self.b
         t0 = (x1 * x2) % self.p
         t1 = (y1 * y2) % self.p
@@ -99,14 +98,38 @@ class Secp256k1:
         z3 = (t2 * t1) % self.p
         z3 = (z3 + z3) % self.p
         z3 = (z3 + z3) % self.p
-
         return x3, y3, z3
+
+    def double_point_affine(self, x, y):
+        s = ((3 * x * x + self.a) * mod_inv(2 * y, self.p)) % self.p
+        x3 = (s * s - 2 * x) % self.p
+        y3 = (s * (x - x3) - y) % self.p
+        return x3, y3
+
+    def add_points_affine(self, x1, y1, x2, y2):
+        s = ((y2 - y1) * mod_inv(x2 - x1, self.p)) % self.p
+        x3 = (s * s - x1 - x2) % self.p
+        y3 = (s * (x1 - x3) - y1) % self.p
+        return x3, y3
+
+    def point_subtract_affine(self, x1, y1, x2, y2):
+        return self.add_points_affine(x1, y1, x2, -y2 % self.p)
+
+    def is_on_secp256k1_affine(self, x, y):
+        return (y**2 - x**3 - self.a * x - self.b) % self.p == 0
+
+    def find_y_pairs_affine(self, x):
+        y_squared = (x**3 + self.a * x + self.b) % self.p
+        y1 = pow(y_squared, (self.p + 1) // 4, self.p)
+        if (y1**2) % self.p != y_squared:
+            raise ValueError("No y value for this x on this curve")
+        y2 = self.p - y1
+        return y1, y2
 
     def homogeneous_to_affine(self, x, y, z):
         """
         Convert a point on an elliptic curve in homogeneous coordinates to affine coordinates.
         """
-
         try:
             z_inv = mod_inv(z, self.p)
             x = (x * z_inv) % self.p

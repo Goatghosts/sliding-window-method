@@ -22,6 +22,6 @@ class DoubleAndAdd(Secp256k1):
             xt, yt, zt = self.double_point(xt, yt, zt)
         return x, y, z
 
-    def multiplication(self, private_key):
+    def scalar_mult(self, private_key):
         x, y, z = self.double_and_add_method(self.Gx, self.Gy, 1, private_key)
         return self.homogeneous_to_affine(x, y, z)
