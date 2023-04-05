@@ -8,6 +8,4 @@ Thanks to [stephancill](https://github.com/stephancill), I finally found a decen
 
 This code demonstrates the process of multiplying the base point of the secp256k1 curve by a scalar (private key) and converts the resulting point into the public key format.
 
-However, this code can be optimized since there is no need to calculate the table for a given window size each time. It is enough to store it in the device's memory for subsequent use during multiplication.
-
-At present, this code only compares the results of multiplying the same scalar using the double and add method and the sliding window method.
+At present, this code only compares the results of multiplying the same scalar using the double and add method, the sliding window method and gtable method.
