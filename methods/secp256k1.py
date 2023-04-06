@@ -100,6 +100,34 @@ class Secp256k1:
         z3 = (z3 + z3) % self.p
         return x3, y3, z3
 
+    # Функция для сложения двух точек в проективных координатах
+    def add_points_projective(self, x1, y1, z1, x2, y2, z2):
+        t0 = (y1 * z2) % self.p
+        t1 = (y2 * z1) % self.p
+        u0 = (x1 * z2) % self.p
+        u1 = (x2 * z1) % self.p
+        t = (t0 - t1) % self.p
+        u = (u0 - u1) % self.p
+        u2 = (u * u) % self.p
+        v = (z1 * z2) % self.p
+        w = (t * t * v - u2 * (u0 + u1)) % self.p
+        u3 = (u * u2) % self.p
+        rx = (u * w) % self.p
+        ry = (t * (u0 * u2 - w) - t0 * u3) % self.p
+        rz = (u3 * v) % self.p
+        return rx, ry, rz
+
+    # Функция для удвоения точки в проективных координатах
+    def double_point_projective(self, x, y, z):
+        t = (x * x * 3 + self.a * z * z) % self.p
+        u = (y * z * 2) % self.p
+        v = (u * x * y * 2) % self.p
+        w = (t * t - v * 2) % self.p
+        rx = (u * w) % self.p
+        ry = (t * (v - w) - u * u * y * y * 2) % self.p
+        rz = (u * u * u) % self.p
+        return rx, ry, rz
+
     def double_point_affine(self, x, y):
         s = ((3 * x * x + self.a) * mod_inv(2 * y, self.p)) % self.p
         x3 = (s * s - 2 * x) % self.p
