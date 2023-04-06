@@ -101,20 +101,18 @@ class Secp256k1:
         return x3, y3, z3
 
     # Функция для сложения двух точек в проективных координатах
-    def add_points_projective(self, x1, y1, z1, x2, y2, z2):
-        t0 = (y1 * z2) % self.p
+    # https://github.com/XopMC/CudaBrainSecp/blob/main/GPU/GPUMath.h#L977
+    def add_points_projective(self, x1, y1, z1, x2, y2):
         t1 = (y2 * z1) % self.p
-        u0 = (x1 * z2) % self.p
         u1 = (x2 * z1) % self.p
-        t = (t0 - t1) % self.p
-        u = (u0 - u1) % self.p
+        t = (y1 - t1) % self.p
+        u = (x1 - u1) % self.p
         u2 = (u * u) % self.p
-        v = (z1 * z2) % self.p
-        w = (t * t * v - u2 * (u0 + u1)) % self.p
+        w = (t * t * z1 - u2 * (x1 + u1)) % self.p
         u3 = (u * u2) % self.p
         rx = (u * w) % self.p
-        ry = (t * (u0 * u2 - w) - t0 * u3) % self.p
-        rz = (u3 * v) % self.p
+        ry = (t * (x1 * u2 - w) - y1 * u3) % self.p
+        rz = (u3 * z1) % self.p
         return rx, ry, rz
 
     # Функция для удвоения точки в проективных координатах

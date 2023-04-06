@@ -54,7 +54,7 @@ class GtableMethod(Secp256k1):
                 index = self.CHUNK_FIRST_ELEMENT[chunk] + (converted_private[chunk] - 1)
                 gx = self.g_table_x[index]
                 gy = self.g_table_y[index]
-                qx, qy, qz = self.add_points_projective(qx, qy, qz, gx, gy, 1)
+                qx, qy, qz = self.add_points_projective(qx, qy, qz, gx, gy)
 
         return qx, qy, qz
 
