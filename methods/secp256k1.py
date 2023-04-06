@@ -102,6 +102,7 @@ class Secp256k1:
 
     # Функция для сложения двух точек в проективных координатах
     # https://github.com/XopMC/CudaBrainSecp/blob/main/GPU/GPUMath.h#L977
+    # https://www.nayuki.io/page/elliptic-curve-point-addition-in-projective-coordinates
     def add_points_projective(self, x1, y1, z1, x2, y2):
         t1 = (y2 * z1) % self.p
         u1 = (x2 * z1) % self.p
