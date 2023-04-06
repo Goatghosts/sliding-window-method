@@ -1,4 +1,5 @@
 import random
+import time
 
 from methods.double_and_add import DoubleAndAdd
 from methods.sliding_window import SlidingWindow
@@ -24,3 +25,9 @@ if __name__ == "__main__":
         print("Uncompressed public key (sliding window method):", get_uncompressed_public_key(x2, y2))
         print("Uncompressed public key         (gtable method):", get_uncompressed_public_key(x3, y3))
         print()
+
+    s = time.time()
+    for i in range(100000):
+        private_key = random.randrange(1, 2**256)
+        gtable_method.scalar_mult(private_key)
+    print(time.time() - s)
