@@ -119,11 +119,12 @@ class Secp256k1:
     def double_point_projective(self, x, y, z):
         t = (x * x * 3 + self.a * z * z) % self.p
         u = (y * z * 2) % self.p
+        uu = (u * u) % self.p
         v = (u * x * y * 2) % self.p
         w = (t * t - v * 2) % self.p
         rx = (u * w) % self.p
-        ry = (t * (v - w) - u * u * y * y * 2) % self.p
-        rz = (u * u * u) % self.p
+        ry = (t * (v - w) - uu * y * y * 2) % self.p
+        rz = (uu * u) % self.p
         return rx, ry, rz
 
     def double_point_affine(self, x, y):
