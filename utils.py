@@ -12,7 +12,7 @@ def mod_inv(a, m):
 
 def get_8_bits_parts(number):
     parts = [0] * 32
-    for i in range(8):
+    for i in range(32):
         parts[i] = number & 0xFF
         number >>= 8
     return parts

@@ -11,9 +11,9 @@ class GtableMethod(Secp256k1):
 
     def __init__(self, init_table=True) -> None:
         super().__init__()
-        self.NUM_GTABLE_CHUNK = 16
-        self.NUM_GTABLE_VALUE = 65536
-        self.CHUNK_FIRST_ELEMENT = [65536 * i for i in range(16)]
+        self.NUM_GTABLE_CHUNK = 32
+        self.NUM_GTABLE_VALUE = 256
+        self.CHUNK_FIRST_ELEMENT = [self.NUM_GTABLE_VALUE * i for i in range(self.NUM_GTABLE_CHUNK)]
         self.g_table_x = [0] * self.NUM_GTABLE_CHUNK * self.NUM_GTABLE_VALUE
         self.g_table_y = [0] * self.NUM_GTABLE_CHUNK * self.NUM_GTABLE_VALUE
         if init_table:
@@ -47,7 +47,7 @@ class GtableMethod(Secp256k1):
         g_table.clear()
 
     def g_table_method(self, privKey):
-        converted_private = get_16_bits_parts(privKey)
+        converted_private = get_8_bits_parts(privKey)
         for chunk in range(self.NUM_GTABLE_CHUNK):
             if converted_private[chunk] > 0:
                 index = self.CHUNK_FIRST_ELEMENT[chunk] + (converted_private[chunk] - 1)
