@@ -116,6 +116,24 @@ class Secp256k1:
         rz = (u3 * z1) % self.p
         return rx, ry, rz
 
+    def lopez_dahab_addition(self, x1, y1, z1, x2, y2):
+        z2 = (z1 * z1) % self.p
+        az2 = 0
+        a = (y2 * z2) % self.p + y1
+        b = (x2 * z1) % self.p + x1
+
+        c = (z1 * b) % self.p
+        d = (((b * b) % self.p) * (c + az2)) % self.p
+
+        z3 = (c * c) % self.p
+        e = (a * c) % self.p
+        x3 = (a * a) % self.p + d + e
+        f = (x2 * z3) % self.p + x3
+        g = ((x2 + y2) * (z3 * z3) % self.p) % self.p
+        y3 = ((e + z3) * f) % self.p + g
+
+        return x3, y3, z3
+
     # Функция для удвоения точки в проективных координатах
     def double_point_projective(self, x, y, z):
         t = (x * x * 3 + self.a * z * z) % self.p
