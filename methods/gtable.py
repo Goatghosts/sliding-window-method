@@ -1,5 +1,6 @@
 import pickle
 
+from utils import get_8_bits_parts, get_16_bits_parts
 from methods.secp256k1 import Secp256k1
 
 
@@ -45,15 +46,8 @@ class GtableMethod(Secp256k1):
                 self.g_table_y[element] = p[1]
         g_table.clear()
 
-    def get_16_bits_parts(self, number):
-        parts = [0] * 16
-        for i in range(16):
-            parts[i] = number & 0xFFFF
-            number >>= 16
-        return parts
-
     def g_table_method(self, privKey):
-        converted_private = self.get_16_bits_parts(privKey)
+        converted_private = get_16_bits_parts(privKey)
         for chunk in range(self.NUM_GTABLE_CHUNK):
             if converted_private[chunk] > 0:
                 index = self.CHUNK_FIRST_ELEMENT[chunk] + (converted_private[chunk] - 1)
