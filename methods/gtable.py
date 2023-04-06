@@ -17,7 +17,7 @@ class GtableMethod(Secp256k1):
         self.g_table_x = [0] * self.NUM_GTABLE_CHUNK * self.NUM_GTABLE_VALUE
         self.g_table_y = [0] * self.NUM_GTABLE_CHUNK * self.NUM_GTABLE_VALUE
         if init_table:
-            self.load_g_table()
+            self.get_g_table()
             with open("g_table_data.pkl", "wb") as f:
                 pickle.dump((self.g_table_x, self.g_table_y), f)
         else:
@@ -25,26 +25,18 @@ class GtableMethod(Secp256k1):
                 self.g_table_x, self.g_table_y = pickle.load(f)
 
     def get_g_table(self):
-        GTable = [(0, 0)] * self.NUM_GTABLE_CHUNK * self.NUM_GTABLE_VALUE
         N = (self.Gx, self.Gy)
         for i in range(self.NUM_GTABLE_CHUNK):
-            GTable[i * self.NUM_GTABLE_VALUE] = N
+            element = i * self.NUM_GTABLE_VALUE
+            self.g_table_x[element] = N[0]
+            self.g_table_y[element] = N[1]
+            point = N
             N = self.double_point_affine(N[0], N[1])
             for j in range(1, self.NUM_GTABLE_VALUE - 1):
-                GTable[(i * self.NUM_GTABLE_VALUE) + j] = N
-                point = GTable[i * self.NUM_GTABLE_VALUE]
-                N = self.add_points_affine(N[0], N[1], point[0], point[1])
-        return GTable
-
-    def load_g_table(self):
-        g_table = self.get_g_table()
-        for i in range(self.NUM_GTABLE_CHUNK):
-            for j in range(self.NUM_GTABLE_VALUE - 1):
                 element = (i * self.NUM_GTABLE_VALUE) + j
-                p = g_table[element]
-                self.g_table_x[element] = p[0]
-                self.g_table_y[element] = p[1]
-        g_table.clear()
+                self.g_table_x[element] = N[0]
+                self.g_table_y[element] = N[1]
+                N = self.add_points_affine(N[0], N[1], point[0], point[1])
 
     def g_table_method(self, privKey):
         converted_private = get_8_bits_parts(privKey)
